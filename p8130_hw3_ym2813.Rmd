@@ -1,0 +1,107 @@
+---
+title: "p8130_hw3_ym2813"
+author: "Anna Ma"
+date: "10/18/2021"
+output: pdf_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+## Problem 1 
+
+Draw a random sample without replacement of 200 observations (100 men and 100 women) from the entire CE data set, where men are identified by "1", and women by "2" in the sex variable
+Call this first sample "A".
+
+```{r}
+library(dplyr)
+population = read.csv("./ce8130entire.csv")
+set.seed(200)
+A = population %>%
+  group_by(sex) %>%
+  sample_n(100)
+```
+
+## Problem 2
+
+Draw a random sample without replacement of 60 observations(30 men and 30 women) and call it sample “B”
+
+```{r}
+set.seed(200)
+B = population %>%
+  group_by(sex) %>%
+  sample_n(30)
+```
+
+## Problem 3
+
+The distribution of CE cost in $USD for men and women.  
+
+1) Side-by-side box plots 
+
+```{r}
+boxplot(A$totchg ~ A$sex, names = c("Men","Women"), ylab = "EC cost in $USD", xlab = "Sex")
+```
+
+2) Histograms
+
+```{r}
+A %>% 
+  mutate(sex = recode(sex, `1` = "Man", `2` = "Women")) %>%
+  ggplot(aes(x = totchg, fill = sex)) + geom_histogram(position = "identity", bins = 30, alpha = 0.4)
+```
+
+## Problem 4
+
+Calculate the mean CE cost and 95% confidence interval separately for men and women in sample “A” as well as sample “B”. Assume we don’t know the population variance. Plot the sample “A” and sample “B” confidence intervals next to each other (by sex). How do they differ, which confidence intervals are wider?  Explain why.
+
+```{r}
+A = A %>% 
+  mutate(sample = "Sample A")
+B = B %>% 
+  mutate(sample = "Sample B")
+
+Sample_AB = rbind(A, B)
+
+library(Rmisc)
+
+A_B_summary <- 
+  summarySE(
+    Sample_AB,
+    measurevar = "totchg", 
+    groupvars = c("sex","sample")) %>% 
+  mutate(
+   sex = recode(sex, `1` = "Man", `2` = "Women"))
+
+A_B_summary$sex <- as.factor(A_B_summary$sex)
+
+p_dodge = position_dodge(0.1) # move them .05 to the left and right
+
+ggplot(A_B_summary, aes(x = sample, y = totchg, colour = sex)) + 
+    geom_errorbar(aes(ymin = totchg - ci, ymax = totchg + ci), width = .1, position = p_dodge) +
+    geom_point(position = p_dodge)
+
+```
+
+Sample B has a wider confidence interval because it has a smaller sample. 
+
+## Problem 5
+
+Conduct test of equality of variance of CE cost among men vs women in sample A and interpret your results.
+
+$H_0: \sigma_1^2 = \sigma_2^2$, $H_a: \sigma_1^2 \neq \sigma_2^2$
+
+```{r}
+var.test(totchg ~ sex, data = A,alternative = "two.sided")
+```
+
+The p-value of F-test is p = 2.748e-07 which is smaller than the significance level 0.05. Therefore, we reject the null hypothesis that the two sample have the same variance. That is, we accept the alternative hypothesis that the two variances differs.
+
+## Problem 6
+
+Using sample “A”, calculate the difference between the mean CE costs for men and women (cost in men-cost in women). Calculate a 95% CI for this difference. Assume we don’t know the population variance.
+
+

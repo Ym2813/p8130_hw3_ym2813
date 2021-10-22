@@ -50,7 +50,7 @@ boxplot(A$totchg ~ A$sex, names = c("Men","Women"), ylab = "EC cost in $USD", xl
 
 ```{r}
 A %>% 
-  mutate(sex = recode(sex, `1` = "Man", `2` = "Women")) %>%
+  mutate(sex = recode(sex, `1` = "men", `2` = "Women")) %>%
   ggplot(aes(x = totchg, fill = sex)) + geom_histogram(position = "identity", bins = 30, alpha = 0.4)
 ```
 
@@ -74,7 +74,7 @@ A_B_summary <-
     measurevar = "totchg", 
     groupvars = c("sex","sample")) %>% 
   mutate(
-   sex = recode(sex, `1` = "Man", `2` = "Women"))
+   sex = recode(sex, `1` = "men", `2` = "Women"))
 
 A_B_summary$sex <- as.factor(A_B_summary$sex)
 
@@ -86,14 +86,14 @@ ggplot(A_B_summary, aes(x = sample, y = totchg, colour = sex)) +
 
 ```
 
-The mean for man and woman in sample A is close, whereas the mean in sample B are a bit more different. The CI for sample A has a closer and smaller range whereas in sample B, the CI has a wider and bigger range. 
+The mean for men and women in sample A is close, whereas the mean in sample B are a bit more different. The CI for sample A has a closer and smaller range whereas in sample B, the CI has a wider and bigger range. 
 Sample B has a wider confidence interval because it has a smaller sample n, which is in the denominator of the formula for CI. Therefore, a smaller sample will result in a wider CI. 
 
 ## Problem 5
 
 Conduct test of equality of variance of CE cost among men vs women in sample A and interpret your results.
 
-$H_0: \sigma_1^2 = \sigma_2^2$, $H_a: \sigma_1^2 \neq \sigma_2^2$
+$H_0: \sigma_{men}^2 = \sigma_{women}^2$, $H_a: \sigma_{men}^2 \neq \sigma_{women}^2$
 
 ```{r}
 var.test(totchg ~ sex, data = A,alternative = "two.sided")
@@ -104,10 +104,10 @@ The p-value of F-test is p = 0.0001012 which is smaller than the significance le
 ## Problem 6
 
 ```{r}
-A_man = A %>% filter(sex == 1)  
+A_men = A %>% filter(sex == 1)  
 A_women = A %>% filter(sex == 2)
 
-t.test(A_man$totchg, A_women$totchg, alternative = "two.sided", var.equal = FALSE)
+t.test(A_men$totchg, A_women$totchg, alternative = "two.sided", var.equal = FALSE)
 ```
 
 The difference between the mean is 7168.00 - 6398.85 = 769.15. The 95% confidence interval is (-1018.745, 2557.045)
@@ -116,7 +116,7 @@ The difference between the mean is 7168.00 - 6398.85 = 769.15. The 95% confidenc
 
 Use sample “A” to test the hypothesis whether men and women have a different CE cost.
 
-$H_0: \mu_{man} = \mu_{woman}$, $H_a: \mu_{man} \neq \mu_{woman}$
+$H_0: \mu_{men} = \mu_{women}$, $H_a: \mu_{men} \neq \mu_{women}$
 
 ```{r}
 t.test(totchg ~ sex, data = A, var.equal = FALSE)
@@ -126,7 +126,7 @@ The p value of the test is 0.397, which is greater than the significance level a
 
 ## Problem 8
 
-The analysis of 100 men and 100 women randomly draw from the HSCRC record shows that there is no significant difference in the average cost for Carotid endarterectomy (CE) between men and women. From the boxplot graph, we can see that the mean cost for both man and woman are nearly at the same level. From the hisogram, we can see that the cost for both groups overlaps a lot, meaning that the costs are similar and that the average of these cost would not differ significantly. To be more specific, we calculated the mean difference between man and woman, and conducted hypothesis test to see if the mean have a difference and what that difference would be. In the 200 people sample we drew, the difference between the average cost for man and women is 769.15. Our test shows that the average cost between man and women in the entire population would not have a significant difference neither. We are 95 confident that the actual difference in the average cost of CE for man and woman between 1990 through 1995 is between -1018.745 and 2557.045. So, we conclude that the average costs of CE for men and women is not significantly different. 
+The analysis of 100 men and 100 women randomly draw from the HSCRC record shows that there is no significant difference in the average cost for Carotid endarterectomy (CE) between men and women. From the boxplot graph, we can see that the mean cost for both men and women are nearly at the same level. From the hisogram, we can see that the cost for both groups overlaps a lot, meaning that the costs are similar and that the average of these cost would not differ significantly. To be more specific, we calculated the mean difference between men and women, and conducted hypothesis test to see if the mean have a difference and what that difference would be. In the 200 people sample we drew, the difference between the average cost for men and women is 769.15. Our test shows that the average cost between men and women in the entire population would not have a significant difference neither. We are 95 confident that the actual difference in the average cost of CE for men and women between 1990 through 1995 is between -1018.745 and 2557.045. So, we conclude that the average costs of CE for men and women is not significantly different. 
 
 ## Problem 9
 

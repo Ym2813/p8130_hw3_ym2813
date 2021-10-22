@@ -147,4 +147,4 @@ The actual mean CE cost for men is $\mu_{M}$ = `r mu_m` and for women $\mu_{W}$ 
 
 ## Problem 10 
 
-Since the event of ci containing the true mean difference hs only two possible outcomes (yes and no) with a probability of 95%, the distribution of the ci containing the true mean difference follows a binomial distribution. The expectation is $E=np$ for binomial distributions. Therefore, we can expect $E=np =140 \times0.95 = 133$ intervals to contain the true population mean difference. The probability that all 140 will contain the true population mean difference is $0.95^{140} = 0.00076086$. 
+Since the event of ci containing the true mean difference has only two possible outcomes (yes and no) with a probability of 95%, the distribution of the ci containing the true mean difference follows a binomial distribution. The expectation is $E=np$ for binomial distributions. Therefore, we can expect $E=np =140 \times0.95 = 133$ intervals to contain the true population mean difference. The probability that all 140 will contain the true population mean difference is $0.95^{140} = 0.00076086$. 

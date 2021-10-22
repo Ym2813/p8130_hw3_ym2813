@@ -5,7 +5,7 @@ date: "10/18/2021"
 output: pdf_document
 ---
 
-```{r}
+```{r, message = FALSE}
 library(tidyverse)
 library(ggplot2)
 ```
@@ -42,7 +42,7 @@ The distribution of CE cost in $USD for men and women.
 
 1) Side-by-side box plots 
 
-```{r}
+```{r, fig.width=6, fig.height=10}
 boxplot(A$totchg ~ A$sex, names = c("Men","Women"), ylab = "EC cost in $USD", xlab = "Sex")
 ```
 
@@ -56,9 +56,9 @@ A %>%
 
 ## Problem 4
 
-Calculate the mean CE cost and 95% confidence interval separately for men and women in sample “A” as well as sample “B”. Assume we don’t know the population variance. Plot the sample “A” and sample “B” confidence intervals next to each other (by sex). How do they differ, which confidence intervals are wider?  Explain why.
+Mean CE cost and 95% confidence interval for men and women in sample “A” and sample “B” with unknown variance.
 
-```{r}
+```{r, message = FALSE}
 A = A %>% 
   mutate(sample = "Sample A")
 B = B %>% 
@@ -86,7 +86,8 @@ ggplot(A_B_summary, aes(x = sample, y = totchg, colour = sex)) +
 
 ```
 
-Sample B has a wider confidence interval because it has a smaller sample. 
+The mean for man and woman in sample A is close, whereas the mean in sample B are a bit more different. The CI for sample A has a closer and smaller range whereas in sample B, the CI has a wider and bigger range. 
+Sample B has a wider confidence interval because it has a smaller sample n, which is in the denominator of the formula for CI. Therefore, a smaller sample will result in a wider CI. 
 
 ## Problem 5
 
@@ -98,10 +99,52 @@ $H_0: \sigma_1^2 = \sigma_2^2$, $H_a: \sigma_1^2 \neq \sigma_2^2$
 var.test(totchg ~ sex, data = A,alternative = "two.sided")
 ```
 
-The p-value of F-test is p = 2.748e-07 which is smaller than the significance level 0.05. Therefore, we reject the null hypothesis that the two sample have the same variance. That is, we accept the alternative hypothesis that the two variances differs.
+The p-value of F-test is p = 0.0001012 which is smaller than the significance level 0.05. Therefore, we reject the null hypothesis that the two sample have the same variance. That is, we accept the alternative hypothesis that the two variances differs.
 
 ## Problem 6
 
-Using sample “A”, calculate the difference between the mean CE costs for men and women (cost in men-cost in women). Calculate a 95% CI for this difference. Assume we don’t know the population variance.
+```{r}
+A_man = A %>% filter(sex == 1)  
+A_women = A %>% filter(sex == 2)
 
+t.test(A_man$totchg, A_women$totchg, alternative = "two.sided", var.equal = FALSE)
+```
 
+The difference between the mean is 7168.00 - 6398.85 = 769.15. The 95% confidence interval is (-1018.745, 2557.045)
+
+## Problem 7
+
+Use sample “A” to test the hypothesis whether men and women have a different CE cost.
+
+$H_0: \mu_{man} = \mu_{woman}$, $H_a: \mu_{man} \neq \mu_{woman}$
+
+```{r}
+t.test(totchg ~ sex, data = A, var.equal = FALSE)
+```
+
+The p value of the test is 0.397, which is greater than the significance level alpha = 0.05. So, we accept the null hypothesis. In conclusion, there is no significant difference between the mean cost for men and women. 
+
+## Problem 8
+
+The analysis of 100 men and 100 women randomly draw from the HSCRC record shows that there is no significant difference in the average cost for Carotid endarterectomy (CE) between men and women. From the boxplot graph, we can see that the mean cost for both man and woman are nearly at the same level. From the hisogram, we can see that the cost for both groups overlaps a lot, meaning that the costs are similar and that the average of these cost would not differ significantly. To be more specific, we calculated the mean difference between man and woman, and conducted hypothesis test to see if the mean have a difference and what that difference would be. In the 200 people sample we drew, the difference between the average cost for man and women is 769.15. Our test shows that the average cost between man and women in the entire population would not have a significant difference neither. We are 95 confident that the actual difference in the average cost of CE for man and woman between 1990 through 1995 is between -1018.745 and 2557.045. So, we conclude that the average costs of CE for men and women is not significantly different. 
+
+## Problem 9
+
+```{r}
+population_df = population %>%
+  group_by(sex)
+
+mu_m_df = population_df %>% filter(sex == 1)
+mu_m = mean(mu_m_df$totchg)
+
+mu_w_df = population_df %>% filter(sex == 2)
+mu_w = mean(mu_w_df$totchg)
+
+pop_dif = mu_m - mu_w 
+```
+
+The actual mean CE cost for men is $\mu_{M}$ = `r mu_m` and for women $\mu_{W}$ = `r mu_w`. The difference $\mu_{M}-\mu_{W}$ = `r pop_dif`. The 95% CI (-1018.745, 2557.045) contains the true mean difference. 
+
+## Problem 10 
+
+Since the event of ci containing the true mean difference hs only two possible outcomes (yes and no) with a probability of 95%, the distribution of the ci containing the true mean difference follows a binomial distribution. The expectation is $E=np$ for binomial distributions. Therefore, we can expect $E=np =140 \times0.95 = 133$ intervals to contain the true population mean difference. The probability that all 140 will contain the true population mean difference is $0.95^{140} = 0.00076086$. 
